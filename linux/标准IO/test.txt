@@ -1,0 +1,163 @@
+标准IO
+================================================
+   1.相关的接口函数
+        1)文件的打开
+                 FILE *fopen(const char *pathname, const char *mode);
+                           返回值：成功 返回FILE指针，本质上是个结构体，用typedef取了别名
+                                   失败  NULL
+                             参数：pathname --》你要打开的文件路径名
+                                       mode --》r  --》只读的方式打开文件
+                                                         r+ --》可读写的方式，没有新建功能
+                                                         w --》可写的方式打开,如果文件不存在，就新建，存在就清空覆盖掉
+                                                         w+ --》可读写的方式，如果文件不存在，就新建，存在就清空覆盖掉
+                                                         a --》可写的方式追加
+                                                         a+ --》可读写的方式追加 
+        2)文件的读写
+                        //按照数据块来读取数据
+                        size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+                               返回值(重点):成功 返回读取到的完整的数据块的个数
+                                                     失败  -1
+                                           参数：ptr --》存放你读取的内容
+                                                 size(重点) --》你要读取的数据块大小，字节
+                                                 nmemb(重点) --》你打算读取多少个数据块
+                                                 stream --》你要读取的那个文件
+                               比如：read(fd,buf,100);  
+                                     fread(buf,50,2)；  //读取2个数据块，每个数据块50个字节
+                                     fread(buf,20,5)；  //读取5个数据块，每个数据块20个字节
+                                     fread(buf,10,10)； //读取10个数据块，每个数据块10个字节
+                                     fread(buf,1,100)； //读取100个数据块，每个数据块1个字节 
+                                      
+                               情况1：如果你的文件剩余的字节数>=100个字节，以上四种写法都可以成功读取100个字节
+                                      区别就是返回值不同
+                               情况2：如果你的文件剩余的字节数<100个字节，以上四种写法都可以成功读取剩余所有的字节
+                                      区别就是返回值不同
+                                        
+                        size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
+                              返回值(重点): 成功      nmemb是多少，返回值就是多少
+                                      参数：ptr --》存放你要写入的内容
+                                            size(重点) --》你要写入的数据块大小，字节
+                                            nmemb(重点) --》你打算写入多少个数据块
+                                            stream --》你要写入的那个文件
+                                      总结：无论write还是fwrite你写入的字节数多了，都会找垃圾帮你凑够你写的字节数
+		                            fwrite第三个参数你写的是多少，返回值就是多少
+                                 
+        3)文件的关闭
+                        int fclose(FILE *stream);
+
+        4)文件偏移设置
+                        int fseek(FILE *stream, long offset, int whence);
+                               返回值：跟lseek不一样，成功 0   失败  -1
+                        long ftell(FILE *stream);
+                               返回值：成功 返回当前位置距离起始位置的字节数
+                        void rewind(FILE *stream); //等价于  fseek(filep,0,SEEK_SET);
+                               将文件偏移挪到起始位置
+
+        5)fgets  fputs   fgetc   fputc   putchar   getchar  
+               char *fgets(char *s, int size, FILE *stream);  //按行读取数据，一次最多读取一行(遇到回车结束读取)
+                       返回值：成功  返回读取的一行数据的首地址
+                                     失败  NULL
+                         参数：s  --》存放读取到的一行数据
+                               size --》你打算读取多少字节的数据
+                               stream --》你要从哪个文件读取一行
+               int fputs(const char *s, FILE *stream);  //往一个文件中写入字符串
+                      返回值：成功  >0   失败  -1  
+                        参数：s --》你要写入的内容
+                              stream --》你要写入的那个文件  
+                      fputs有局限性(char *)，只能写入字符串，但是fwrite可以写任意类型(void *)的数据
+
+               int fgetc(FILE *stream);  //按字符读取数据，一次只能读取一个字节的数据
+                      返回值：读取到的那个字符的ASCII码值
+                              失败 -1
+               int fputc(int c, FILE *stream);  //把c这个字符写入到stream表示的文件中
+   
+               int getchar(void);       //从IO缓冲区读取一个字符
+               int putchar(int c);      //把c代表的字符在液晶屏上打印出来
+
+       6)判断是否到达文件末尾
+              int feof(FILE *stream);
+                  返回值：1 表示达到文件末尾
+
+       7)fprintf和fscanf()
+                   sprintf 拼接字符串
+                   printf  打印字符串
+               int fprintf(FILE *stream, const char *format, ...);  //按照指定格式，把数据合并写入到stream代表的文件中
+
+               int fscanf(FILE *stream, const char *format, ...);  //按照指定格式，把数据读取出来
+                   fscanf读取指定格式的数据
+	           如果指定的格式是%s(你可以使用%数字s限定读取的字符串长度)，fscanf会把整个文件内容都当成是字符串
+       8)主动刷新缓冲区
+                  正常情况下标准IO是带缓冲区：
+                           情况一：缓冲区满了，自动刷新
+                           情况二：缓冲区没有满，主函数return退出的时候也会自动帮助你刷新缓冲区
+                           情况三：fclose关闭文件的时候也会刷新缓冲区
+                  int fflush(FILE *stream);
+
+   2.对比系统IO和标准IO
+             区别一：
+                         系统IO采用文件描述符来表示文件
+                              系统IO是linux内核提供的接口函数
+                         标准IO采用FILE*来表示文件
+                              标准IO是把系统IO做了二次封装，加入了缓冲区，产生了标准IO
+             区别二：
+                         系统IO        0         1            2
+                                       #define  STDIN_FILENO        0    标准输入--》键盘
+                                       #define  STDOUT_FILENO       1    标准输出--》液晶屏
+                                       #define  STDERR_FILENO       2    标准错误输出--》液晶屏
+                         标准IO       stdin   stdout      stderr
+                                       FILE *stdin;          标准输入--》键盘
+                                       FILE *stdout;         标准输出--》液晶屏  
+                                       FILE *stderr;         标准错误输出--》液晶屏
+             区别三：  
+                         系统IO没有缓冲区
+                         标准IO带缓冲区
+         
+练习：
+      1.  用标准IO实现文件拷贝(分段读写)
+              fread、fwrite   //什么文件都行
+      2.  
+          fgets最擅长纯文本文件按行读取，读取键盘输入字符串
+          用fgetc和fputc配合实现文件拷贝   //什么文件都行
+      
+
+作业：
+     1.常见的图片格式
+       jpg  png bmp gif动图
+       bmp图片编码特点(24位的位图)
+            每个像素点占3个字节，分别是BGR的值 B 蓝色 G 绿色 R 红色
+                                                跟液晶屏像素点排列顺序(ARGB)不一致
+            //bmp图片是微软公司发明的图片格式，在计算机中存放的时候是上下颠倒
+            //bmp图片最前面有54个字节的头信息，真实的BGR数据从55字节开始的
+       液晶屏每个像素点占多少字节
+            占4个字节，分别是ARGB的值，A代表透明度，写代码的时候可以忽略(设置为0)
+       粤嵌的开发板屏幕分辨率是800*480
+       思路：
+              第一步：打开图片，打开液晶屏的驱动
+                      open(图片)
+                      open("/dev/fb0")  液晶屏的驱动
+              第二步：读取图片的像素点颜色值
+              第三步：把读取的数据写入到液晶屏(难点)
+                      液晶屏每个像素点4字节
+                      bmp每个像素点3字节
+                      想办法把3个字节拼接成4个字节写入到液晶屏才可以
+              第四步：关闭
+     
+                             
+     1. 利用下面的宏定义，判断目录中文件类型，如果是普通文件---》进一步判断该文件后缀名是不是.txt
+                                              如果是目录       ---》把刚才找到的txt文件拷贝到这个目录中
+
+              DT_BLK      块设备
+
+              DT_CHR      字符设备
+
+              DT_DIR      目录
+
+              DT_FIFO     管道
+
+              DT_LNK      软链接
+
+              DT_REG      普通文件
+
+              DT_SOCK    套接字
+
+
+

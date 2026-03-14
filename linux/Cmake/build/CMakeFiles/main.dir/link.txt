@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/main.dir/main.c.o -o main  -Wl,-rpath,/mnt/d/code/linux/Cmake/build/src src/liblcd.so src/libmath.so 

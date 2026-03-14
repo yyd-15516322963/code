@@ -1,0 +1,7 @@
+/mnt/d/code/linux/Cmake/build/CMakeFiles/main.dir
+/mnt/d/code/linux/Cmake/build/CMakeFiles/edit_cache.dir
+/mnt/d/code/linux/Cmake/build/CMakeFiles/rebuild_cache.dir
+/mnt/d/code/linux/Cmake/build/src/CMakeFiles/lcd.dir
+/mnt/d/code/linux/Cmake/build/src/CMakeFiles/math.dir
+/mnt/d/code/linux/Cmake/build/src/CMakeFiles/edit_cache.dir
+/mnt/d/code/linux/Cmake/build/src/CMakeFiles/rebuild_cache.dir

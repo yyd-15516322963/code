@@ -1,0 +1,27 @@
+#ifndef _MYHEAD_H_
+#define _MYHEAD_H_
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
+#include <stdbool.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <linux/input.h> 
+#include <sys/mman.h>  
+#include <errno.h>  
+#include <sys/wait.h>
+#include <pthread.h>  
+
+#define ON 0
+#define OFF 1
+
+
+#endif 
+
+

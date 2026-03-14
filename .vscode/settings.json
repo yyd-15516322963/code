@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.py": "python",
+        "stdio.h": "c"
+        
+    },
+    "cmake.sourceDirectory": "/mnt/d/code/LVGL/my_project/lv_drivers"
+}

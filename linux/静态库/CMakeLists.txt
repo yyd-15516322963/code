@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.28)
+project(eicphoto VERSION 1.0.0 LANGUAGES C)
+set(SRCDIR $(pwd))
+include_directories($(SRCDIR)/include)
+add_executable(main main.c)
+target_link_libraries(main lcd math)
+add_subdirectory(src/)

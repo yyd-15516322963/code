@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC -shared -Wl,-soname,liblcd.so -o liblcd.so CMakeFiles/lcd.dir/lcd.c.o 
